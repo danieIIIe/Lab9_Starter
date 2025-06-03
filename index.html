@@ -7,6 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({
+      token: "942fc04c96984e63b289d56b3b6a496a"
+    });
+    TrackJS.track('Testing TrackJS!');
+  </script>
+
   <style>
     button {
       margin: 3px;
@@ -89,19 +97,113 @@
 
   <script>
     let form = document.querySelector('form');
+    class ImproperInputError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = 'ImproperInputError';
+      }
+    }
+    window.onerror = function(msg, url, lineNo, columnNo, error) {
+        console.log('Message:', msg);
+        console.log('Source:', source);
+        console.log('Line:', lineNo, 'Column:', columnNo);
+        console.log('Error object:', error);
+        return true;
+      }
+
     form.addEventListener('submit', e => {
       e.preventDefault();
       let output = document.querySelector('output');
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
-    });
+      try {
+    if (isNaN(firstNum) || isNaN(secondNum) || firstNum.trim() === '' || secondNum.trim() === '') {
+      throw new ImproperInputError('your inputs must both be numbers');
+    }
+
+    const result = eval(`${firstNum} ${operator} ${secondNum}`);
+    output.innerHTML = result;
+  } catch (error) {
+    output.innerHTML = 'error';
+    console.error('input validation error:', error);
+  } finally {
+    console.log('calculation tried with:', { firstNum, operator, secondNum });
+  }
+});
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    const testInfo = {name: 'dan', num: 42 };
+
+    errorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      switch (btn.textContent) {
+        case 'Console Log':
+          console.log('console.log message');
+          break;
+        case 'Console Error':
+          console.error('console.error message');
+          break;
+        case 'Console Count':
+          console.count('count Button');
+          break;
+        case 'Console Warn':
+          console.warn('console.warn message');
+          break;
+        case 'Console Assert':
+          console.assert(false, 'console.assert message');
+          break;
+        case 'Console Clear':
+          console.clear();
+          break;
+        case 'Console Dir':
+          console.dir(testInfo);
+          break;
+        case 'Console dirxml':
+          console.dirxml(document.body);
+          break;
+        case 'Console Group Start':
+          console.group('grouped');
+          console.log('log 1');
+          console.log('log 2');
+          break;
+        case 'Console Group End':
+          console.groupEnd();
+          break;
+        case 'Console Table':
+          console.table([
+              { name: 'danielle', num: 19 },
+              { name: 'stella', num: 5 }
+            ]);
+          break;
+        case 'Start Timer':
+          console.time('Timer');
+          break;
+        case 'End Timer':
+          console.timeEnd('Timer');
+          break;
+        case 'Console Trace':
+          function first() {
+            second();
+          }
+          function second() {
+            third();
+          }
+          function third() {
+            console.trace('trace msg');
+          }
+          first();
+          break;
+        case 'Trigger a Global Error':
+          UndefinedFunction();
+          break;
+      }
+    });
+  });
+
   </script>
 </body>
 
